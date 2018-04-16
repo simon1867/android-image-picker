@@ -29,6 +29,8 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
     private boolean folderMode;
     private boolean includeVideo;
     private boolean showCamera;
+    private boolean showDoneInFolderView;
+    private boolean autoSelectCameraImage;
 
     private ImageLoader imageLoader;
 
@@ -128,6 +130,22 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         this.folderMode = folderMode;
     }
 
+    public boolean isShowDoneInFolderView() {
+        return showDoneInFolderView;
+    }
+
+    public void setShowDoneInFolderView(boolean showDoneInFolderView) {
+        this.showDoneInFolderView = showDoneInFolderView;
+    }
+
+    public boolean isAutoSelectCameraImage() {
+        return autoSelectCameraImage;
+    }
+
+    public void setAutoSelectCameraImage(boolean autoSelectCameraImage) {
+        this.autoSelectCameraImage = autoSelectCameraImage;
+    }
+
     public void setTheme(@StyleRes int theme) {
         this.theme = theme;
     }
@@ -180,6 +198,8 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         dest.writeByte(this.folderMode ? (byte) 1 : (byte) 0);
         dest.writeByte(this.includeVideo ? (byte) 1 : (byte) 0);
         dest.writeByte(this.showCamera ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.showDoneInFolderView ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.autoSelectCameraImage ? (byte) 1 : (byte) 0);
         dest.writeSerializable(this.imageLoader);
     }
 
@@ -202,6 +222,8 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         this.folderMode = in.readByte() != 0;
         this.includeVideo = in.readByte() != 0;
         this.showCamera = in.readByte() != 0;
+        this.showDoneInFolderView = in.readByte() != 0;
+        this.autoSelectCameraImage = in.readByte() != 0;
         this.imageLoader = (ImageLoader) in.readSerializable();
     }
 

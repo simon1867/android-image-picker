@@ -61,6 +61,20 @@
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="Exclude   "/>
 
+            <Switch
+                android:id="@+id/ef_switch_auto_select_camera_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:text="Auto Select Camera Image   "/>
+
+            <Switch
+                android:id="@+id/ef_switch_show_done_in_folder_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:text="Show Done In Folder View   "/>
+
             <TextView
                 android:id="@+id/text_view"
                 android:layout_width="wrap_content"

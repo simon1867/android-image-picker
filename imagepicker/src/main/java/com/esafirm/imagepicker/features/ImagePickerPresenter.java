@@ -106,8 +106,8 @@ class ImagePickerPresenter extends BasePresenter<ImagePickerView> {
         getCameraModule().getImage(context, data, images -> {
             if (ConfigUtils.shouldReturn(config, true)) {
                 getView().finishPickImages(images);
-            } else {
-                getView().showCapturedImage();
+            } else if (images.size() > 0) {
+                getView().showCapturedImage(images.get(0));
             }
         });
     }

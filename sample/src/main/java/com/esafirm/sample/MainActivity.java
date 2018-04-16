@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
         final boolean folderMode = ((Switch) findViewById(R.id.ef_switch_folder_mode)).isChecked();
         final boolean includeVideo = ((Switch) findViewById(R.id.ef_switch_include_video)).isChecked();
         final boolean isExclude = ((Switch) findViewById(R.id.ef_switch_include_exclude)).isChecked();
+        final boolean autoSelectCameraImage = ((Switch) findViewById(R.id.ef_switch_auto_select_camera_image)).isChecked();
+        final boolean showDoneInFolderView = ((Switch) findViewById(R.id.ef_switch_show_done_in_folder_view)).isChecked();
 
         ImagePicker imagePicker = ImagePicker.create(this)
                 .language("in") // Set image picker language
@@ -101,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
                         ? ReturnMode.ALL
                         : ReturnMode.NONE) // set whether pick action or camera action should return immediate result or not. Only works in single mode for image picker
                 .folderMode(folderMode) // set folder mode (false by default)
+                .autoSelectCameraImage(autoSelectCameraImage)
+                .showDoneInFolderView(showDoneInFolderView)
                 .includeVideo(includeVideo) // include video (false by default)
                 .toolbarArrowColor(Color.RED) // set toolbar arrow up color
                 .toolbarFolderTitle("Folder") // folder selection title

@@ -167,6 +167,12 @@ public class RecyclerViewManager {
         imageAdapter.setImageSelectedListener(listener);
     }
 
+    public void checkIfShouldSelectCameraImage(final Image image) {
+        if (config.isAutoSelectCameraImage()) {
+            imageAdapter.addSelectedImage(image);
+        }
+    }
+
     public boolean selectImage(boolean isSelected) {
         if (config.getMode() == MODE_MULTIPLE) {
             if (imageAdapter.getSelectedImages().size() >= config.getLimit() && !isSelected) {
@@ -182,7 +188,7 @@ public class RecyclerViewManager {
     }
 
     public boolean isShowDoneButton() {
-        return !isDisplayingFolderView()
+        return (!isDisplayingFolderView() || config.isShowDoneInFolderView())
                 && !imageAdapter.getSelectedImages().isEmpty()
                 && (config.getReturnMode() != ReturnMode.ALL && config.getReturnMode() != ReturnMode.GALLERY_ONLY);
     }

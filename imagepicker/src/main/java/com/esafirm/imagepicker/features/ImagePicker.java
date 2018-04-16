@@ -151,6 +151,16 @@ public abstract class ImagePicker {
         return this;
     }
 
+    public ImagePicker autoSelectCameraImage(boolean autoSelectCameraImage) {
+        config.setAutoSelectCameraImage(autoSelectCameraImage);
+        return this;
+    }
+
+    public ImagePicker showDoneInFolderView(boolean showDoneInFolderView) {
+        config.setShowDoneInFolderView(showDoneInFolderView);
+        return this;
+    }
+
 
     public ImagePicker includeVideo(boolean includeVideo) {
         config.setIncludeVideo(includeVideo);

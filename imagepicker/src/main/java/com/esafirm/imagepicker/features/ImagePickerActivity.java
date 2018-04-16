@@ -510,7 +510,8 @@ public class ImagePickerActivity extends AppCompatActivity implements ImagePicke
     }
 
     @Override
-    public void showCapturedImage() {
+    public void showCapturedImage(Image image) {
+        recyclerViewManager.checkIfShouldSelectCameraImage(image);
         getDataWithPermission();
     }
 

@@ -2,7 +2,7 @@ package com.esafirm.imagepicker.features;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.StyleRes;
+import androidx.annotation.StyleRes;
 
 import com.esafirm.imagepicker.features.common.BaseConfig;
 import com.esafirm.imagepicker.features.imageloader.ImageLoader;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class ImagePickerConfig extends BaseConfig implements Parcelable {
 
-    static final int NO_COLOR = -1;
+    public static final int NO_COLOR = -1;
 
     private ArrayList<Image> selectedImages;
     private ArrayList<File> excludedImages;
@@ -29,6 +29,7 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
 
     private boolean folderMode;
     private boolean includeVideo;
+    private boolean includeAnimation;
     private boolean showCamera;
     private boolean showDoneInFolderView;
     private boolean autoSelectCameraImage;
@@ -78,6 +79,14 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
 
     public void setIncludeVideo(boolean includeVideo) {
         this.includeVideo = includeVideo;
+    }
+
+    public boolean isIncludeAnimation() {
+        return includeAnimation;
+    }
+
+    public void setIncludeAnimation(boolean includeAnimation) {
+        this.includeAnimation = includeAnimation;
     }
 
     public String getFolderTitle() {
@@ -207,6 +216,7 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         dest.writeInt(this.theme);
         dest.writeByte(this.folderMode ? (byte) 1 : (byte) 0);
         dest.writeByte(this.includeVideo ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.includeAnimation ? (byte) 1: (byte) 0);
         dest.writeByte(this.showCamera ? (byte) 1 : (byte) 0);
         dest.writeByte(this.showDoneInFolderView ? (byte) 1 : (byte) 0);
         dest.writeByte(this.autoSelectCameraImage ? (byte) 1 : (byte) 0);
@@ -232,6 +242,7 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         this.theme = in.readInt();
         this.folderMode = in.readByte() != 0;
         this.includeVideo = in.readByte() != 0;
+        this.includeAnimation = in.readByte() != 0;
         this.showCamera = in.readByte() != 0;
         this.showDoneInFolderView = in.readByte() != 0;
         this.autoSelectCameraImage = in.readByte() != 0;

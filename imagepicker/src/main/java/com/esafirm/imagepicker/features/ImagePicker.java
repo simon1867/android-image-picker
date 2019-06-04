@@ -3,10 +3,6 @@ package com.esafirm.imagepicker.features;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.annotation.StyleRes;
-import android.support.v4.app.Fragment;
 
 import com.esafirm.imagepicker.features.cameraonly.ImagePickerCameraOnly;
 import com.esafirm.imagepicker.features.imageloader.ImageLoader;
@@ -18,6 +14,11 @@ import com.esafirm.imagepicker.model.Image;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
+import androidx.fragment.app.Fragment;
 
 public abstract class ImagePicker {
 
@@ -172,6 +173,11 @@ public abstract class ImagePicker {
         return this;
     }
 
+    public ImagePicker includeAnimation(boolean includeAnimation) {
+        config.setIncludeAnimation(includeAnimation);
+        return this;
+    }
+
     public ImagePicker imageDirectory(String directory) {
         config.setImageDirectory(directory);
         return this;
@@ -202,13 +208,13 @@ public abstract class ImagePicker {
         return this;
     }
 
-    protected ImagePickerConfig getConfig() {
+    public ImagePickerConfig getConfig() {
         LocaleManager.setLanguange(config.getLanguage());
-        return config;
+        return ConfigUtils.checkConfig(config);
     }
 
     public Intent getIntent(Context context) {
-        ImagePickerConfig config = ConfigUtils.checkConfig(getConfig());
+        ImagePickerConfig config = getConfig();
         Intent intent = new Intent(context, ImagePickerActivity.class);
         intent.putExtra(ImagePickerConfig.class.getSimpleName(), config);
         return intent;

@@ -5,9 +5,13 @@ import android.content.res.Configuration;
 import android.os.Parcelable;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.esafirm.imagepicker.R;
 import com.esafirm.imagepicker.adapter.FolderPickerAdapter;
 import com.esafirm.imagepicker.adapter.ImagePickerAdapter;
+import com.esafirm.imagepicker.features.ImagePickerComponentHolder;
 import com.esafirm.imagepicker.features.ImagePickerConfig;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.features.imageloader.ImageLoader;
@@ -22,9 +26,6 @@ import com.esafirm.imagepicker.view.GridSpacingItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import static com.esafirm.imagepicker.features.IpCons.MAX_LIMIT;
 import static com.esafirm.imagepicker.features.IpCons.MODE_MULTIPLE;
@@ -82,7 +83,7 @@ public class RecyclerViewManager {
             selectedImages = null;
         }
         /* Init folder and image adapter */
-        final ImageLoader imageLoader = config.getImageLoader();
+        final ImageLoader imageLoader = ImagePickerComponentHolder.getInstance().getImageLoader();
         imageAdapter = new ImagePickerAdapter(context, imageLoader, selectedImages, onImageClickListener);
         folderAdapter = new FolderPickerAdapter(context, imageLoader, bucket -> {
             foldersState = recyclerView.getLayoutManager().onSaveInstanceState();

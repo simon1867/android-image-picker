@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
+import androidx.fragment.app.Fragment;
+
 import com.esafirm.imagepicker.features.cameraonly.ImagePickerCameraOnly;
 import com.esafirm.imagepicker.features.imageloader.ImageLoader;
 import com.esafirm.imagepicker.helper.ConfigUtils;
@@ -14,11 +19,6 @@ import com.esafirm.imagepicker.model.Image;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.StyleRes;
-import androidx.fragment.app.Fragment;
 
 public abstract class ImagePicker {
 
@@ -34,7 +34,7 @@ public abstract class ImagePicker {
 
         public ImagePickerWithActivity(Activity activity) {
             this.activity = activity;
-            init();
+            init(activity);
         }
 
         @Override
@@ -54,7 +54,7 @@ public abstract class ImagePicker {
 
         public ImagePickerWithFragment(Fragment fragment) {
             this.fragment = fragment;
-            init();
+            init(fragment.requireContext());
         }
 
         @Override
@@ -72,8 +72,8 @@ public abstract class ImagePicker {
     /* > Stater */
     /* --------------------------------------------------- */
 
-    public void init() {
-        config = ImagePickerConfigFactory.createDefault();
+    public void init(Context context) {
+        config = ImagePickerConfigFactory.createDefault(context);
     }
 
     public static ImagePickerWithActivity create(Activity activity) {
@@ -173,6 +173,11 @@ public abstract class ImagePicker {
         return this;
     }
 
+    public ImagePicker onlyVideo(boolean onlyVideo) {
+        config.setOnlyVideo(onlyVideo);
+        return this;
+    }
+
     public ImagePicker includeAnimation(boolean includeAnimation) {
         config.setIncludeAnimation(includeAnimation);
         return this;
@@ -193,11 +198,6 @@ public abstract class ImagePicker {
         return this;
     }
 
-    public ImagePicker imageLoader(ImageLoader imageLoader) {
-        config.setImageLoader(imageLoader);
-        return this;
-    }
-
     public ImagePicker enableLog(boolean isEnable) {
         IpLogger.getInstance().setEnable(isEnable);
         return this;
@@ -209,7 +209,7 @@ public abstract class ImagePicker {
     }
 
     public ImagePickerConfig getConfig() {
-        LocaleManager.setLanguange(config.getLanguage());
+        LocaleManager.setLanguage(config.getLanguage());
         return ConfigUtils.checkConfig(config);
     }
 

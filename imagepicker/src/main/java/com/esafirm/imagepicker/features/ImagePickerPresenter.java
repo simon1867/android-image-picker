@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.fragment.app.Fragment;
+
 import android.widget.Toast;
 
 import com.esafirm.imagepicker.R;
@@ -11,6 +14,7 @@ import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.common.BaseConfig;
 import com.esafirm.imagepicker.features.common.BasePresenter;
 import com.esafirm.imagepicker.features.common.ImageLoaderListener;
+import com.esafirm.imagepicker.features.fileloader.DefaultImageFileLoader;
 import com.esafirm.imagepicker.helper.ConfigUtils;
 import com.esafirm.imagepicker.model.Folder;
 import com.esafirm.imagepicker.model.Image;
@@ -19,15 +23,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.fragment.app.Fragment;
-
 class ImagePickerPresenter extends BasePresenter<ImagePickerView> {
 
-    private ImageFileLoader imageLoader;
+    private DefaultImageFileLoader imageLoader;
     private DefaultCameraModule cameraModule;
     private Handler main = new Handler(Looper.getMainLooper());
 
-    ImagePickerPresenter(ImageFileLoader imageLoader) {
+    ImagePickerPresenter(DefaultImageFileLoader imageLoader) {
         this.imageLoader = imageLoader;
     }
 
@@ -52,12 +54,13 @@ class ImagePickerPresenter extends BasePresenter<ImagePickerView> {
 
         boolean isFolder = config.isFolderMode();
         boolean includeVideo = config.isIncludeVideo();
+        boolean onlyVideo = config.isOnlyVideo();
         boolean includeAnimation = config.isIncludeAnimation();
         ArrayList<File> excludedImages = config.getExcludedImages();
 
         runOnUiIfAvailable(() -> getView().showLoading(true));
 
-        imageLoader.loadDeviceImages(isFolder, includeVideo, includeAnimation, excludedImages, new ImageLoaderListener() {
+        imageLoader.loadDeviceImages(isFolder, onlyVideo, includeVideo, includeAnimation, excludedImages, new ImageLoaderListener() {
             @Override
             public void onImageLoaded(final List<Image> images, final List<Folder> folders) {
                 runOnUiIfAvailable(() -> {

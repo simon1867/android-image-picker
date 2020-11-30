@@ -2,8 +2,8 @@ package com.esafirm.imagepicker.features.imageloader;
 
 import android.widget.ImageView;
 
-import java.io.Serializable;
+import com.esafirm.imagepicker.model.Image;
 
-public interface ImageLoader extends Serializable {
-    void loadImage(String path, ImageView imageView, ImageType imageType);
+public interface ImageLoader {
+    void loadImage(Image image, ImageView imageView, ImageType imageType);
 }

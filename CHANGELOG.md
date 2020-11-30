@@ -1,5 +1,43 @@
 ## Changelog
 
+**2.4.0**
+- Add `getUri()` for convenient [#285](https://github.com/esafirm/android-image-picker/pull/285)
+- Fixes for Android Q [#290](https://github.com/esafirm/android-image-picker/pull/290) [#293](https://github.com/esafirm/android-image-picker/pull/293)
+- Fixed some typo [#291](https://github.com/esafirm/android-image-picker/pull/291)
+- Show video duration on the image picker [#271](https://github.com/esafirm/android-image-picker/pull/271)
+- Use github workflow instead of CircleCI
+- Migrate sample to Kotlin [#295](https://github.com/esafirm/android-image-picker/pull/295)
+
+Thanks to @hjchin @sr1dh4r @xpdlf1004 @LinX64 for the PR 🔥
+
+**2.3.1**
+- Fix un-clickable Snackbar button
+
+**2.3.0**
+- Fix failed to create image file [#262](https://github.com/esafirm/android-image-picker/pull/262)
+- Handle external scoped [Glide issue](https://github.com/bumptech/glide/issues/3896)
+- Bump target SDK to Q
+- Bump Glide to 4.11.0
+
+**2.2.0**
+- Configurable ImageFileLoader
+- New approach on how to set custom ImageLoader
+- Fix and improvements
+
+**2.1.0**
+- Support video only picker 
+- Fix 0 bytes image | `369ba31`
+- AGP 3.4.2
+
+**2.0.0**
+- ImagePicker is now in `Fragment` and you can use it in custom UI (please see sample)
+- Remove Retrolambda
+- Compatibility with Glide 4.9.0
+- Add Option to exclude GIF from image picker
+- Bug fixes and improvements
+
+Also, we integrate our repo with CircleCi and add issue templating, because we want to improve our development experience in general
+
 **1.12.0 - New Return Mode API** 
 
 > BREAKING CHANGES!!! 

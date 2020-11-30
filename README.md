@@ -7,6 +7,14 @@
 
 A simple library to select images from the gallery and camera.
 
+# Support Me!
+
+I would make myself more commited to this repo and OSS works in general.
+
+Would you help me achieving this goals?
+
+<a href='https://ko-fi.com/M4M41RRE0' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi4.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 # Screenshot
 
 <details>
@@ -41,11 +49,6 @@ dependencies {
 
 change `x.y.z` to version in the [release page](https://github.com/esafirm/android-image-picker/releases)
 
-**Breaking changes**
-
-If you're not using custom image loader and have Glide v3 in your classpath, please using version `1.8.0` below! 
-Will improve this image loader compatibility issue in ImagePicker v2! 
-
 # Usage
 
 For full example, please refer to the `sample` app. 
@@ -70,7 +73,8 @@ ImagePicker.create(this)
 	.toolbarFolderTitle("Folder") // folder selection title
 	.toolbarImageTitle("Tap to select") // image selection title
 	.toolbarArrowColor(Color.BLACK) // Toolbar 'up' arrow color
-	.includeVideo(true) // Show video on image picker 
+	.includeVideo(true) // Show video on image picker
+	.onlyVideo(onlyVideo) // include video (false by default)
 	.single() // single mode
 	.multi() // multi mode (default mode)
 	.limit(10) // max images can be selected (99 by default)
@@ -81,10 +85,8 @@ ImagePicker.create(this)
 	.excludeFiles(files) // same as exclude but using ArrayList<File>
 	.theme(R.style.CustomImagePickerTheme) // must inherit ef_BaseTheme. please refer to sample
 	.enableLog(false) // disabling log
-	.imageLoader(new GrayscaleImageLoder()) // custom image loader, must be serializeable
 	.start(); // start image picker activity with request code
 ```                
-
 If you want to call it outside `Activity` or `Fragment`, you can simply get the `Intent` from the builder
 
 ```java
@@ -119,55 +121,25 @@ ImagePicker.cameraOnly().getIntent(context)
 
 You also still can use the `DefaultCameraModule` but discouraged to do it. 
 
-## Return Mode
+# Wiki
 
-There's 4 mode available:
+- [Custom components](https://github.com/esafirm/android-image-picker/blob/master/docs/custom_components.md)
+- [Using another image library](https://github.com/esafirm/android-image-picker/blob/master/docs/another_image_library.md)
+- [Return mode](https://github.com/esafirm/android-image-picker/blob/master/docs/return_mode.md)
+- [Save location](https://github.com/esafirm/android-image-picker/blob/master/docs/save_location.md)
 
-1. `ReturnMode.NONE` -> When image is picked, ImagePickerActivity will not dismissed even in Single Mode
 
-2. `ReturnMode.ALL` -> When image is picked dismiss then deliver result
+# AndroidX and version 2.0.0 above
 
-3. `ReturnMode.CAMERA_ONLY` -> When image is picked with Camera, dismiss then deliver the result
+As version 2.0.0 above, we already use AndroidX artifact in our library. 
+If you have any trouble adding this version to your current project like [this](https://github.com/esafirm/android-image-picker/issues/226)
 
-4. `ReturnMode.GALLERY_ONLY` -> Same as CAMERA_ONLY but with Gallery
+Please add this to your `gradle.properties` :
 
-You can define your selected mode with `setReturnMode()` method. 
-
-## Set Save Location
-
-By default, ImagePicker will try to save the image generated from camera to `Environment.DIRECTORY_PICTURES` with directory name `"Camera"`. 
-
-You can change the directory name only by using:
-
-```java
-ImagePicker.create(activity).imageDiretory(String dirName)
-``` 
-
-Or you can change the full path of the save location by using:
-
-```java
-ImagePicker.create(activity).imageFullDirectory(String fullPath)
 ```
-
-## Using Another Image Loader Library 
-
-By default, Image picker is using [Glide](https://github.com/bumptech/glide) as its image loader library. 
-
-You can change this by using:
-
-```java
-ImagePicker.create(activity).imageLoader(ImageLoader customImageLoader)
+android.useAndroidX=true
+android.enableJetifier=true
 ```
-
-Next thing you wanna do is excluding Glide library from ImagePicker. You can achieve this with Gradle. Ex: 
-
-```groovy
-implementation("com.github.esafirm.android-image-picker:imagepicker:x.y.z", {
-    exclude group: 'com.github.bumptech.glide', module: 'glide'
-})
-``` 
-
-You can find more about this in [here](https://github.com/esafirm/android-image-picker/issues/105). Thanks to [Galaxer](https://github.com/Galaxer) 🙏
 
 # Credits
 

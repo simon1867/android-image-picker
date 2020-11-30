@@ -20,11 +20,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.esafirm.imagepicker.R;
 import com.esafirm.imagepicker.features.camera.CameraHelper;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.cameraonly.CameraOnlyConfig;
 import com.esafirm.imagepicker.features.common.BaseConfig;
+import com.esafirm.imagepicker.features.fileloader.DefaultImageFileLoader;
 import com.esafirm.imagepicker.features.recyclers.RecyclerViewManager;
 import com.esafirm.imagepicker.helper.ConfigUtils;
 import com.esafirm.imagepicker.helper.ImagePickerPreferences;
@@ -36,13 +44,6 @@ import com.esafirm.imagepicker.view.SnackBarView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -203,7 +204,7 @@ public class ImagePickerFragment extends Fragment implements ImagePickerView {
 
     private void setupComponents() {
         preferences = new ImagePickerPreferences(getActivity());
-        presenter = new ImagePickerPresenter(new ImageFileLoader(getActivity()));
+        presenter = new ImagePickerPresenter(new DefaultImageFileLoader(getActivity()));
         presenter.attachView(this);
     }
 
@@ -391,7 +392,7 @@ public class ImagePickerFragment extends Fragment implements ImagePickerView {
      */
     private void openAppSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", getActivity().getPackageName(), null));
+                Uri.fromParts("package", requireActivity().getPackageName(), null));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -522,7 +523,8 @@ public class ImagePickerFragment extends Fragment implements ImagePickerView {
     @Override
     public void finishPickImages(List<Image> images) {
         Intent data = new Intent();
-        data.putParcelableArrayListExtra(IpCons.EXTRA_SELECTED_IMAGES, (ArrayList<? extends Parcelable>) images);
+        ArrayList<Image> imageArrayList = new ArrayList<>(images);
+        data.putParcelableArrayListExtra(IpCons.EXTRA_SELECTED_IMAGES, imageArrayList);
         interactionListener.finishPickImages(data);
     }
 
@@ -543,9 +545,9 @@ public class ImagePickerFragment extends Fragment implements ImagePickerView {
     }
 
     @Override
-    public void showError(Throwable throwable) {
+    public void showError(@Nullable Throwable throwable) {
         String message = "Unknown Error";
-        if (throwable != null && throwable instanceof NullPointerException) {
+        if (throwable instanceof NullPointerException) {
             message = "Images do not exist";
         }
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();

@@ -6,13 +6,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.esafirm.imagepicker.R;
+import com.esafirm.imagepicker.model.Image;
 
 public class DefaultImageLoader implements ImageLoader {
 
     @Override
-    public void loadImage(String path, ImageView imageView, ImageType imageType) {
+    public void loadImage(Image image, ImageView imageView, ImageType imageType) {
         Glide.with(imageView.getContext())
-                .load(path)
+                .load(image.getUri())
                 .apply(RequestOptions
                         .placeholderOf(imageType == ImageType.FOLDER
                                 ? R.drawable.ef_folder_placeholder

@@ -1,6 +1,7 @@
 package com.esafirm.imagepicker.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -29,6 +30,7 @@ class ImagePickerAdapter(
 
     private val images: MutableList<Image> = mutableListOf()
     val selectedImages: MutableList<Image> = mutableListOf()
+    val toAddSelectedImages: MutableList<Image> = mutableListOf()
 
     private var imageSelectedListener: OnImageSelectedListener? = null
     private val videoDurationHolder = HashMap<Long, String?>()
@@ -102,10 +104,21 @@ class ImagePickerAdapter(
     fun setData(images: List<Image>) {
         this.images.clear()
         this.images.addAll(images)
+
+        // if we have any images that we tried to select but we didn't have the image at the time
+        // try to find it now that we are updating the image list
+        val toAddSelectedImagesCopy = toAddSelectedImages.toList()
+        toAddSelectedImages.clear()
+        toAddSelectedImagesCopy.forEach { selectedImage(it) }
     }
 
-    fun addSelectedImage(image: Image?) {
-        selectedImages.add(image!!)
+    /**
+     * Finds an image that already exists in the list and marks it as selected
+     */
+    fun selectedImage(image: Image) {
+        images.firstOrNull { it.name == image.name }?.let {
+            selectedImages.add(it)
+        } ?: toAddSelectedImages.add(image)
     }
 
     private fun addSelected(image: Image, position: Int) {

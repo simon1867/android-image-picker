@@ -10,7 +10,6 @@ import androidx.annotation.StyleRes;
 import androidx.fragment.app.Fragment;
 
 import com.esafirm.imagepicker.features.cameraonly.ImagePickerCameraOnly;
-import com.esafirm.imagepicker.features.imageloader.ImageLoader;
 import com.esafirm.imagepicker.helper.ConfigUtils;
 import com.esafirm.imagepicker.helper.IpLogger;
 import com.esafirm.imagepicker.helper.LocaleManager;
@@ -161,12 +160,6 @@ public abstract class ImagePicker {
         config.setAutoSelectCameraImage(autoSelectCameraImage);
         return this;
     }
-
-    public ImagePicker showDoneInFolderView(boolean showDoneInFolderView) {
-        config.setShowDoneInFolderView(showDoneInFolderView);
-        return this;
-    }
-
 
     public ImagePicker includeVideo(boolean includeVideo) {
         config.setIncludeVideo(includeVideo);

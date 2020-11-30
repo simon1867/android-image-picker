@@ -34,7 +34,6 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
     private boolean onlyVideo;
     private boolean includeAnimation;
     private boolean showCamera;
-    private boolean showDoneInFolderView;
     private boolean autoSelectCameraImage;
 
     private transient String language;
@@ -157,14 +156,6 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         this.folderMode = folderMode;
     }
 
-    public boolean isShowDoneInFolderView() {
-        return showDoneInFolderView;
-    }
-
-    public void setShowDoneInFolderView(boolean showDoneInFolderView) {
-        this.showDoneInFolderView = showDoneInFolderView;
-    }
-
     public boolean isAutoSelectCameraImage() {
         return autoSelectCameraImage;
     }
@@ -220,7 +211,6 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         dest.writeByte(this.onlyVideo ? (byte) 1 : (byte) 0);
         dest.writeByte(this.includeAnimation ? (byte) 1 : (byte) 0);
         dest.writeByte(this.showCamera ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.showDoneInFolderView ? (byte) 1 : (byte) 0);
         dest.writeByte(this.autoSelectCameraImage ? (byte) 1 : (byte) 0);
     }
 
@@ -246,7 +236,6 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         this.onlyVideo = in.readByte() != 0;
         this.includeAnimation = in.readByte() != 0;
         this.showCamera = in.readByte() != 0;
-        this.showDoneInFolderView = in.readByte() != 0;
         this.autoSelectCameraImage = in.readByte() != 0;
     }
 

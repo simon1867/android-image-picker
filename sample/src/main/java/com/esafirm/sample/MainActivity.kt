@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity() {
             val onlyVideo = ef_switch_only_video.isChecked
             val isExclude = ef_switch_include_exclude.isChecked
             val autoSelectCameraImage = ef_switch_auto_select_camera_image.isChecked;
-            val showDoneInFolderView = ef_switch_show_done_in_folder_view.isChecked;
 
 
             val imagePicker = ImagePicker.create(this)
@@ -70,7 +69,6 @@ class MainActivity : AppCompatActivity() {
                 .returnMode(if (returnAfterCapture) ReturnMode.ALL else ReturnMode.NONE) // set whether pick action or camera action should return immediate result or not. Only works in single mode for image picker
                 .folderMode(folderMode) // set folder mode (false by default)
                 .autoSelectCameraImage(autoSelectCameraImage) // selects the photo just taken when returning to the gallery view
-                .showDoneInFolderView(showDoneInFolderView) // shows done button in folder view
                 .includeVideo(includeVideo) // include video (false by default)
                 .onlyVideo(onlyVideo) // include video (false by default)
                 .toolbarArrowColor(Color.RED) // set toolbar arrow up color

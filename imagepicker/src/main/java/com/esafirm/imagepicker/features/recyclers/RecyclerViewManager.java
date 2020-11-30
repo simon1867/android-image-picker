@@ -177,7 +177,7 @@ public class RecyclerViewManager {
 
     public void checkIfShouldSelectCameraImage(final Image image) {
         if (config.isAutoSelectCameraImage()) {
-            imageAdapter.addSelectedImage(image);
+            imageAdapter.selectedImage(image);
         }
     }
 
@@ -196,7 +196,7 @@ public class RecyclerViewManager {
     }
 
     public boolean isShowDoneButton() {
-        return (!isDisplayingFolderView() || config.isShowDoneInFolderView())
+        return !isDisplayingFolderView()
                 && !imageAdapter.getSelectedImages().isEmpty()
                 && (config.getReturnMode() != ReturnMode.ALL && config.getReturnMode() != ReturnMode.GALLERY_ONLY);
     }

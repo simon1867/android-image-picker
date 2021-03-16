@@ -156,19 +156,19 @@ public class DefaultImageFileLoader implements ImageFileLoader {
                     String name = cursor.getString(cursor.getColumnIndex(projection[1]));
                     String bucket = cursor.getString(cursor.getColumnIndex(projection[3]));
 
-                    Image image = new Image(id, name, path);
+                    if (name != null) {
+                        Image image = new Image(id, name, path);
+                        temp.add(image);
 
-                    temp.add(image);
-
-                    if (folderMap != null) {
-                        Folder folder = folderMap.get(bucket);
-                        if (folder == null) {
-                            folder = new Folder(bucket);
-                            folderMap.put(bucket, folder);
+                        if (folderMap != null && bucket != null) {
+                            Folder folder = folderMap.get(bucket);
+                            if (folder == null) {
+                                folder = new Folder(bucket);
+                                folderMap.put(bucket, folder);
+                            }
+                            folder.getImages().add(image);
                         }
-                        folder.getImages().add(image);
                     }
-
                 } while (cursor.moveToPrevious());
             }
             cursor.close();

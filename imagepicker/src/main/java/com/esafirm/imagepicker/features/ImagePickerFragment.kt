@@ -164,6 +164,7 @@ class ImagePickerFragment : Fragment() {
 
         state.showCapturedImage.fetch {
             loadDataWithPermission()
+            recyclerViewManager.checkIfShouldSelectCameraImage(this)
         }
     }
 

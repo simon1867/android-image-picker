@@ -14,6 +14,7 @@ class ImagePickerConfig(
     var folderTitle: String? = null,
     var imageTitle: String? = null,
     var doneButtonText: String? = null,
+    var isAutoSelectCameraImage: Boolean = false,
     var arrowColor: Int = NO_COLOR,
     var limit: Int = IpCons.MAX_LIMIT,
     @StyleRes var theme: Int = 0,

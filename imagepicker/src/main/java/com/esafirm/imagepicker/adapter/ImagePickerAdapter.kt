@@ -30,11 +30,9 @@ class ImagePickerAdapter(
     private val itemClickListener: OnImageClickListener
 ) : BaseListAdapter<ImageViewHolder>(context, imageLoader) {
 
-    private val listDiffer by lazy {
-        AsyncListDiffer<Image>(this, SimpleDiffUtilCallBack())
-    }
-
+    val images: MutableList<Image> = mutableListOf()
     val selectedImages: MutableList<Image> = mutableListOf()
+    private val toAddSelectedImages: MutableList<Image> = mutableListOf()
 
     private var imageSelectedListener: OnImageSelectedListener? = null
     private val videoDurationHolder = HashMap<Long, String?>()
@@ -55,7 +53,7 @@ class ImagePickerAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ImageViewHolder, position: Int) {
-        val image = getItem(position) ?: return
+        val image = getItem(position) ?: throw IllegalStateException("suck to suck")
 
         val isSelected = isSelected(image)
         imageLoader.loadImage(image, viewHolder.imageView, ImageType.GALLERY)
@@ -85,6 +83,7 @@ class ImagePickerAdapter(
             fileTypeIndicator.text = fileTypeLabel
             fileTypeIndicator.visibility = if (showFileTypeIndicator) View.VISIBLE else View.GONE
             alphaView.alpha = if (isSelected) 0.5f else 0f
+            
             itemView.setOnClickListener {
                 val shouldSelect = itemClickListener(isSelected)
 
@@ -105,10 +104,26 @@ class ImagePickerAdapter(
         return selectedImages.any { it.path == image.path }
     }
 
-    override fun getItemCount() = listDiffer.currentList.size
+    override fun getItemCount() = images.size
 
     fun setData(images: List<Image>) {
-        listDiffer.submitList(images)
+        this.images.clear()
+        this.images.addAll(images)
+
+        // if we have any images that we tried to select but we didn't have the image at the time
+        // try to find it now that we are updating the image list
+        val toAddSelectedImagesCopy = toAddSelectedImages.toList()
+        toAddSelectedImages.clear()
+        toAddSelectedImagesCopy.forEach { selectedImage(it) }
+    }
+
+    /**
+     * Finds an image that already exists in the list and marks it as selected
+     */
+    fun selectedImage(image: Image) {
+        images.firstOrNull { it.name == image.name }?.let {
+            selectedImages.add(it)
+        } ?: toAddSelectedImages.add(image)
     }
 
     private fun addSelected(image: Image, position: Int) {
@@ -141,7 +156,7 @@ class ImagePickerAdapter(
         this.imageSelectedListener = imageSelectedListener
     }
 
-    private fun getItem(position: Int) = listDiffer.currentList.getOrNull(position)
+    private fun getItem(position: Int) = images.getOrNull(position)
 
     class ImageViewHolder(itemView: View) : ViewHolder(itemView) {
         val imageView: ImageView = itemView.image_view

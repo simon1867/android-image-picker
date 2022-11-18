@@ -103,7 +103,7 @@ internal class ImagePickerPresenter(
                 }
             } else {
                 setState {
-                    copy(showCapturedImage = Unit.asSingleEvent())
+                    copy(showCapturedImage = images?.firstOrNull().asSingleEvent())
                 }
             }
         }

@@ -14,7 +14,7 @@ data class ImagePickerState(
     val isLoading: Boolean = false,
     val error: SingleEvent<Throwable>? = null,
     val finishPickImage: SingleEvent<List<Image>>? = null,
-    val showCapturedImage: SingleEvent<Unit>? = null
+    val showCapturedImage: SingleEvent<Image?>? = null
 )
 
 interface ImagePickerAction {

@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         val includeVideo = binding.switchIncludeVideo.isChecked
         val onlyVideo = binding.switchOnlyVideo.isChecked
         val isExclude = binding.switchIncludeExclude.isChecked
+        val autoSelectCameraImage = binding.switchAutoSelectCameraImage.isChecked
 
         ImagePickerComponentsHolder.setInternalComponent(
             CustomImagePickerComponents(this, useCustomImageLoader)
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
 
             isFolderMode = folderMode // set folder mode (false by default)
             isIncludeVideo = includeVideo // include video (false by default)
+            isAutoSelectCameraImage = autoSelectCameraImage
             isOnlyVideo = onlyVideo // include video (false by default)
             arrowColor = Color.RED // set toolbar arrow up color
             folderTitle = "Folder" // folder selection title

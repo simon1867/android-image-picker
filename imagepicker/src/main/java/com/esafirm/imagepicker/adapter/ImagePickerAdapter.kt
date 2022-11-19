@@ -53,7 +53,7 @@ class ImagePickerAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ImageViewHolder, position: Int) {
-        val image = getItem(position) ?: throw IllegalStateException("suck to suck")
+        val image = getItem(position) ?: return
 
         val isSelected = isSelected(image)
         imageLoader.loadImage(image, viewHolder.imageView, ImageType.GALLERY)
@@ -83,7 +83,7 @@ class ImagePickerAdapter(
             fileTypeIndicator.text = fileTypeLabel
             fileTypeIndicator.visibility = if (showFileTypeIndicator) View.VISIBLE else View.GONE
             alphaView.alpha = if (isSelected) 0.5f else 0f
-            
+
             itemView.setOnClickListener {
                 val shouldSelect = itemClickListener(isSelected)
 
@@ -123,6 +123,9 @@ class ImagePickerAdapter(
     fun selectedImage(image: Image) {
         images.firstOrNull { it.name == image.name }?.let {
             selectedImages.add(it)
+
+            val index = images.indexOf(it)
+            notifyItemChanged(index)
         } ?: toAddSelectedImages.add(image)
     }
 

@@ -3,6 +3,7 @@ package com.esafirm.imagepicker.features
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import com.esafirm.imagepicker.R
 import com.esafirm.imagepicker.features.camera.CameraModule
@@ -81,7 +82,7 @@ internal class ImagePickerPresenter(
         }
     }
 
-    fun captureImage(fragment: Fragment, config: BaseConfig, requestCode: Int) {
+    fun captureImage(fragment: Fragment, config: BaseConfig, launcher: ActivityResultLauncher<Intent>) {
         val context = fragment.requireContext().applicationContext
         val intent = cameraModule.getCameraIntent(fragment.requireContext(), config)
         if (intent == null) {
@@ -92,19 +93,23 @@ internal class ImagePickerPresenter(
             ).show()
             return
         }
-        fragment.startActivityForResult(intent, requestCode)
+
+        launcher.launch(intent)
     }
 
-    fun finishCaptureImage(context: Context, data: Intent?, config: BaseConfig?) {
+    fun finishCaptureImage(
+        context: Context,
+        data: Intent?,
+        config: BaseConfig?,
+        onImageLoaded: (List<Image>?) -> Unit
+    ) {
         cameraModule.getImage(context, data) { images ->
             if (ConfigUtils.shouldReturn(config!!, true)) {
                 setState {
                     copy(finishPickImage = images.orEmpty().asSingleEvent())
                 }
             } else {
-                setState {
-                    copy(showCapturedImage = images?.firstOrNull().asSingleEvent())
-                }
+                onImageLoaded(images)
             }
         }
     }

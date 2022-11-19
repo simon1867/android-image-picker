@@ -2,6 +2,7 @@ package com.esafirm.imagepicker.features
 
 import android.Manifest
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.ActivityCompat
@@ -66,6 +68,8 @@ class ImagePickerFragment : Fragment() {
 
     private lateinit var presenter: ImagePickerPresenter
     private lateinit var interactionListener: ImagePickerInteractionListener
+
+    private var latestCameraImage: Image? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -160,11 +164,6 @@ class ImagePickerFragment : Fragment() {
             interactionListener.finishPickImages(
                 ImagePickerUtils.createResultIntent(images)
             )
-        }
-
-        state.showCapturedImage.fetch {
-            loadDataWithPermission()
-            recyclerViewManager.checkIfShouldSelectCameraImage(this)
         }
     }
 
@@ -263,7 +262,14 @@ class ImagePickerFragment : Fragment() {
         }
     }
 
-    private fun loadData() = presenter.loadData(config)
+    private fun loadData() {
+        presenter.loadData(config)
+
+        latestCameraImage?.let {
+            recyclerViewManager.checkIfShouldSelectCameraImage(it)
+            latestCameraImage = null
+        }
+    }
 
     /**
      * Request for permission
@@ -303,21 +309,6 @@ class ImagePickerFragment : Fragment() {
     }
 
     /**
-     * Check if the captured image is stored successfully
-     * Then reload data
-     */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_CAPTURE) {
-            if (resultCode == Activity.RESULT_OK) {
-                presenter.finishCaptureImage(requireContext(), data, config)
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                presenter.abortCaptureImage(requireContext())
-            }
-        }
-    }
-
-    /**
      * Start camera intent
      * Create a temporary file and pass file Uri to camera intent
      */
@@ -325,7 +316,21 @@ class ImagePickerFragment : Fragment() {
         if (!checkCameraAvailability(requireActivity())) {
             return
         }
-        presenter.captureImage(this, config, RC_CAPTURE)
+        presenter.captureImage(this, config, launchCaptureImage)
+    }
+
+    private val launchCaptureImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            presenter.finishCaptureImage(requireContext(), it.data, config) { images ->
+                latestCameraImage = images?.firstOrNull()
+
+                if (latestCameraImage != null) {
+                    loadDataWithPermission()
+                }
+            }
+        } else if (it.resultCode == Activity.RESULT_CANCELED) {
+            presenter.abortCaptureImage(requireContext())
+        }
     }
 
     override fun onDestroy() {

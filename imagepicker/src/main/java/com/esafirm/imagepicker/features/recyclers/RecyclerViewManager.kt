@@ -125,7 +125,7 @@ class RecyclerViewManager(
             if (config.mode == ImagePickerMode.SINGLE) {
                 return ConfigUtils.getImageTitle(context, config)
             }
-            val imageSize = imageAdapter.selectedImages.size
+            val imageSize = imageAdapter.selectedImages.distinct().size
             val useDefaultTitle = config.imageTitle.isNullOrBlank().not() && imageSize == 0
             if (useDefaultTitle) {
                 return ConfigUtils.getImageTitle(context, config)

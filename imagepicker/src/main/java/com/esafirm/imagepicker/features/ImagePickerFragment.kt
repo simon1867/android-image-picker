@@ -237,7 +237,7 @@ class ImagePickerFragment : Fragment() {
      * Get all selected images then return image to caller activity
      */
     fun onDone() {
-        presenter.onDoneSelectImages(recyclerViewManager.selectedImages, config)
+        presenter.onDoneSelectImages(recyclerViewManager.selectedImages.distinct(), config)
     }
 
     /**
@@ -325,7 +325,9 @@ class ImagePickerFragment : Fragment() {
                 latestCameraImage = images?.firstOrNull()
 
                 if (latestCameraImage != null) {
-                    loadDataWithPermission()
+                    requireActivity().runOnUiThread {
+                        loadDataWithPermission()
+                    }
                 }
             }
         } else if (it.resultCode == Activity.RESULT_CANCELED) {

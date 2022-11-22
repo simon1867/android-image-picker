@@ -159,7 +159,12 @@ class RecyclerViewManager(
 
     fun checkIfShouldSelectCameraImage(image: Image?) {
         if (config.isAutoSelectCameraImage && image != null) {
-            imageAdapter.selectedImage(image)
+            // check if limit is already reached before selecting photo taken from camera
+            if (imageAdapter.selectedImages.size < config.limit) {
+                imageAdapter.selectedImage(image)
+            } else {
+                Toast.makeText(context, R.string.ef_msg_limit_images, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

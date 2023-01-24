@@ -316,7 +316,18 @@ class ImagePickerFragment : Fragment() {
         if (!checkCameraAvailability(requireActivity())) {
             return
         }
+        if (config.requestCameraPermission && ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            return
+        }
+
         presenter.captureImage(this, config, launchCaptureImage)
+    }
+
+    private val cameraPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
+        if (isGranted) {
+            presenter.captureImage(this, config, launchCaptureImage)
+        }
     }
 
     private val launchCaptureImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

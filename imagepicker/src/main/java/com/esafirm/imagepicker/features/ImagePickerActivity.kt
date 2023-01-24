@@ -1,8 +1,10 @@
 package com.esafirm.imagepicker.features
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.Menu
@@ -12,7 +14,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import com.esafirm.imagepicker.R
+import com.esafirm.imagepicker.features.camera.CameraHelper
 import com.esafirm.imagepicker.features.cameraonly.CameraOnlyConfig
 import com.esafirm.imagepicker.helper.ConfigUtils
 import com.esafirm.imagepicker.helper.ImagePickerUtils
@@ -56,6 +60,13 @@ class ImagePickerActivity : AppCompatActivity(), ImagePickerInteractionListener 
         }
     }
 
+    private val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            val cameraIntent = cameraModule.getCameraIntent(this, cameraOnlyConfig!!)
+            startForCameraResult.launch(cameraIntent)
+        }
+    }
+
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleManager.updateResources(newBase))
     }
@@ -71,6 +82,14 @@ class ImagePickerActivity : AppCompatActivity(), ImagePickerInteractionListener 
         }
 
         if (isCameraOnly) {
+            if (!CameraHelper.checkCameraAvailability(this)) {
+                return
+            }
+            if (cameraOnlyConfig!!.requestCameraPermission && ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                return
+            }
+
             val cameraIntent = cameraModule.getCameraIntent(this, cameraOnlyConfig!!)
             startForCameraResult.launch(cameraIntent)
             return

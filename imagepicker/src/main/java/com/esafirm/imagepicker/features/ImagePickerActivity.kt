@@ -123,6 +123,7 @@ class ImagePickerActivity : AppCompatActivity(), ImagePickerInteractionListener 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         if (!isCameraOnly) {
             menu.findItem(R.id.menu_camera).isVisible = config?.isShowCamera ?: true
+            menu.findItem(R.id.menu_video).isVisible = config?.isShowVideoCam ?: false
             menu.findItem(R.id.menu_done).apply {
                 title = ConfigUtils.getDoneButtonText(this@ImagePickerActivity, config!!)
                 isVisible = imagePickerFragment.isShowDoneButton
@@ -146,6 +147,10 @@ class ImagePickerActivity : AppCompatActivity(), ImagePickerInteractionListener 
         }
         if (id == R.id.menu_camera) {
             imagePickerFragment.captureImage()
+            return true
+        }
+        if (id == R.id.menu_video) {
+            imagePickerFragment.captureVideo()
             return true
         }
         return super.onOptionsItemSelected(item)

@@ -48,16 +48,16 @@ object ImagePickerUtils {
         return mediaStorageDir
     }
 
-    fun createImageFile(savePath: ImagePickerSavePath, context: Context): File? {
+    fun createImageFile(savePath: ImagePickerSavePath, context: Context, extension: String = "jpg"): File? {
         val mediaStorageDir = createFileInDirectory(savePath, context) ?: return null
 
         // Create a media file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.getDefault()).format(Date())
-        var result = File(mediaStorageDir, "IMG_$timeStamp.jpg")
+        var result = File(mediaStorageDir, "IMG_$timeStamp.$extension")
         var counter = 0
         while (result.exists()) {
             counter++
-            result = File(mediaStorageDir, "IMG_$timeStamp($counter).jpg")
+            result = File(mediaStorageDir, "IMG_$timeStamp($counter).$extension")
         }
         return result
     }

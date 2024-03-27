@@ -7,6 +7,7 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.webkit.MimeTypeMap
 import com.esafirm.imagepicker.features.common.BaseConfig
 import com.esafirm.imagepicker.helper.ImagePickerUtils
 import com.esafirm.imagepicker.helper.IpLogger
@@ -35,6 +36,22 @@ class DefaultCameraModule : CameraModule {
         return intent
     }
 
+    override fun getVideoIntent(context: Context, config: BaseConfig): Intent? {
+        prepareForNewIntent()
+
+        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        val imageFile = ImagePickerUtils.createImageFile(config.savePath, context, "mp4")
+
+        if (config.isSaveImage && imageFile != null) {
+            val appContext = context.applicationContext
+            val uri = createVideoUri(appContext, imageFile)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+            ImagePickerUtils.grantAppPermission(context, intent, uri)
+            currentUri = uri.toString()
+        }
+        return intent
+    }
+
     private fun prepareForNewIntent() {
         currentImagePath = null
         currentUri = null
@@ -50,6 +67,21 @@ class DefaultCameraModule : CameraModule {
             }
             val collection =
                 MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            return appContext.contentResolver.insert(collection, values)
+        }
+        return UriUtils.uriForFile(appContext, imageFile)
+    }
+
+    private fun createVideoUri(appContext: Context, imageFile: File): Uri? {
+        currentImagePath = "file:" + imageFile.absolutePath
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+            val values = ContentValues().apply {
+                put(MediaStore.Images.Media.DISPLAY_NAME, imageFile.name)
+                put(MediaStore.Images.Media.MIME_TYPE, "video/mp4")
+            }
+            val collection =
+                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
             return appContext.contentResolver.insert(collection, values)
         }
         return UriUtils.uriForFile(appContext, imageFile)

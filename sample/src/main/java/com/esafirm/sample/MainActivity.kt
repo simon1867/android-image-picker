@@ -1,10 +1,16 @@
 package com.esafirm.sample
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.esafirm.imagepicker.features.*
 import com.esafirm.imagepicker.features.cameraonly.CameraOnlyConfig
@@ -45,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun captureImage() {
-        imagePickerLauncher.launch(CameraOnlyConfig())
+        imagePickerLauncher.launch(CameraOnlyConfig(requestCameraPermission = true))
     }
 
     private fun createConfig(): ImagePickerConfig {
@@ -87,8 +93,10 @@ class MainActivity : AppCompatActivity() {
             showDoneButtonAlways = true // Show done button always or not
             limit = 10 // max images can be selected (99 by default)
             isShowCamera = true // show camera or not (true by default)
+            isShowVideoCam = true
             savePath = ImagePickerSavePath("Camera") // captured image directory name ("Camera" folder by default)
             savePath = ImagePickerSavePath(Environment.getExternalStorageDirectory().path, isRelative = false) // can be a full path
+            requestCameraPermission = true
 
             if (isExclude) {
                 excludedImages = images.toFiles() // don't show anything on this selected images
@@ -98,9 +106,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startWithIntent() {
+    private val requestPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
         val intent = createImagePickerIntent(this, createConfig())
         startActivityForResult(intent, IpCons.RC_IMAGE_PICKER)
+    }
+
+    private fun startWithIntent() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_VISUAL_USER_SELECTED))
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO))
+        } else {
+            requestPermissions.launch(arrayOf(READ_EXTERNAL_STORAGE))
+        }
     }
 
     private fun start() {

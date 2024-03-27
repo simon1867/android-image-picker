@@ -20,6 +20,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.ActivityCompat
+import androidx.core.content.PermissionChecker
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.esafirm.imagepicker.R
@@ -48,11 +51,22 @@ class ImagePickerFragment : Fragment() {
         requireArguments().getParcelable(ImagePickerConfig::class.java.simpleName)!!
     }
 
-    private val permission: String
+    private val permissions: Array<String>
         get() {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Manifest.permission.READ_MEDIA_IMAGES
-            } else Manifest.permission.WRITE_EXTERNAL_STORAGE
+            return when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                )
+
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
+
+                else -> arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
         }
 
     private val requestPermissionLauncher =
@@ -91,9 +105,9 @@ class ImagePickerFragment : Fragment() {
         if (::interactionListener.isInitialized.not()) {
             throw RuntimeException(
                 "ImagePickerFragment needs an " +
-                    "ImagePickerInteractionListener. This will be set automatically if the " +
-                    "activity implements ImagePickerInteractionListener, and can be set manually " +
-                    "with fragment.setInteractionListener(listener)."
+                        "ImagePickerInteractionListener. This will be set automatically if the " +
+                        "activity implements ImagePickerInteractionListener, and can be set manually " +
+                        "with fragment.setInteractionListener(listener)."
             )
         }
 
@@ -250,15 +264,40 @@ class ImagePickerFragment : Fragment() {
         recyclerViewManager.changeOrientation(newConfig.orientation)
     }
 
+    private val requestPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
+            loadDataWithPermission(
+                results.values.toList()
+            )
+        }
+
+    private var hasRequestedPermission = false
+
     /**
      * Check permission
      */
     private fun loadDataWithPermission() {
-        val rc = ActivityCompat.checkSelfPermission(requireContext(), permission)
-        if (rc == PackageManager.PERMISSION_GRANTED) {
+        if (!hasRequestedPermission) {
+            hasRequestedPermission = true
+            requestPermissions.launch(permissions)
+        } else {
+            loadDataWithPermission(
+                permissions.map {
+                    PermissionChecker.checkSelfPermission(requireContext(), it) == PERMISSION_GRANTED
+                }
+            )
+        }
+    }
+
+    private fun loadDataWithPermission(permissionResult: List<Boolean>) {
+        // if we got any of the permissions then we can load the data (using `any()` to handle situation where user only gave permission to certain files)
+        if (permissionResult.any { it }) {
+            binding?.efSnackbar?.isVisible = false
             loadData()
         } else {
-            requestWriteExternalOrReadImagesPermission()
+            binding?.efSnackbar?.show(R.string.ef_msg_no_write_external_permission) {
+                openAppSettings()
+            }
         }
     }
 
@@ -268,31 +307,6 @@ class ImagePickerFragment : Fragment() {
         latestCameraImage?.let {
             recyclerViewManager.checkIfShouldSelectCameraImage(it)
             latestCameraImage = null
-        }
-    }
-
-    /**
-     * Request for permission
-     * If permission denied or app is first launched, request for permission
-     * If permission denied and user choose 'Never Ask Again', show snackbar with an action that navigate to app settings
-     */
-    private fun requestWriteExternalOrReadImagesPermission() {
-        IpLogger.w("Write External permission or Read Media Images is not granted. Requesting permission")
-        when {
-            shouldShowRequestPermissionRationale(permission) -> {
-                requestPermissionLauncher.launch(permission)
-            }
-
-            else -> {
-                if (!preferences.isPermissionRequested()) {
-                    preferences.setPermissionIsRequested()
-                    requestPermissionLauncher.launch(permission)
-                } else {
-                    binding?.efSnackbar?.show(R.string.ef_msg_no_write_external_permission) {
-                        openAppSettings()
-                    }
-                }
-            }
         }
     }
 
@@ -316,7 +330,11 @@ class ImagePickerFragment : Fragment() {
         if (!checkCameraAvailability(requireActivity())) {
             return
         }
-        if (config.requestCameraPermission && ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (config.requestCameraPermission && ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             return
         }
@@ -324,27 +342,56 @@ class ImagePickerFragment : Fragment() {
         presenter.captureImage(this, config, launchCaptureImage)
     }
 
-    private val cameraPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
-        if (isGranted) {
-            presenter.captureImage(this, config, launchCaptureImage)
+    /**
+     * Start video intent
+     * Create a temporary file and pass file Uri to camera intent
+     */
+    fun captureVideo() {
+        if (!checkCameraAvailability(requireActivity())) {
+            return
         }
+        if (config.requestCameraPermission && ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            videoPermissionLauncher.launch(Manifest.permission.CAMERA)
+            return
+        }
+
+        presenter.captureVideo(this, config, launchCaptureImage)
     }
 
-    private val launchCaptureImage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == RESULT_OK) {
-            presenter.finishCaptureImage(requireContext(), it.data, config) { images ->
-                latestCameraImage = images?.firstOrNull()
+    private val cameraPermissionLauncher =
+        registerForActivityResult(RequestPermission()) { isGranted ->
+            if (isGranted) {
+                presenter.captureImage(this, config, launchCaptureImage)
+            }
+        }
 
-                if (latestCameraImage != null) {
-                    requireActivity().runOnUiThread {
-                        loadDataWithPermission()
+    private val videoPermissionLauncher =
+        registerForActivityResult(RequestPermission()) { isGranted ->
+            if (isGranted) {
+                presenter.captureVideo(this, config, launchCaptureImage)
+            }
+        }
+
+    private val launchCaptureImage =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                presenter.finishCaptureImage(requireContext(), it.data, config) { images ->
+                    latestCameraImage = images?.firstOrNull()
+
+                    if (latestCameraImage != null) {
+                        requireActivity().runOnUiThread {
+                            loadDataWithPermission()
+                        }
                     }
                 }
+            } else if (it.resultCode == Activity.RESULT_CANCELED) {
+                presenter.abortCaptureImage(requireContext())
             }
-        } else if (it.resultCode == Activity.RESULT_CANCELED) {
-            presenter.abortCaptureImage(requireContext())
         }
-    }
 
     override fun onDestroy() {
         super.onDestroy()

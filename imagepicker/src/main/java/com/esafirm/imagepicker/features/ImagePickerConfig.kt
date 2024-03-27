@@ -23,6 +23,7 @@ class ImagePickerConfig(
     var isOnlyVideo: Boolean = false,
     var isIncludeAnimation: Boolean = false,
     var isShowCamera: Boolean = true,
+    var isShowVideoCam: Boolean = false,
     var selectedImages: List<Image> = emptyList(),
     var excludedImages: List<File> = emptyList(),
     override var savePath: ImagePickerSavePath = ImagePickerSavePath.DEFAULT,

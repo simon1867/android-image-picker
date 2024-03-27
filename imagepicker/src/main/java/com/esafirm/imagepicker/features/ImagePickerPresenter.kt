@@ -97,6 +97,21 @@ internal class ImagePickerPresenter(
         launcher.launch(intent)
     }
 
+    fun captureVideo(fragment: Fragment, config: BaseConfig, launcher: ActivityResultLauncher<Intent>) {
+        val context = fragment.requireContext().applicationContext
+        val intent = cameraModule.getVideoIntent(fragment.requireContext(), config)
+        if (intent == null) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.ef_error_create_video_file),
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        launcher.launch(intent)
+    }
+
     fun finishCaptureImage(
         context: Context,
         data: Intent?,

@@ -22,7 +22,7 @@ import java.util.Locale
 
 object ImagePickerUtils {
 
-    private const val DEFAULT_DURATION_LABEL = "00:00"
+    private const val DEFAULT_DURATION_LABEL = "0:00"
 
     private fun createFileInDirectory(savePath: ImagePickerSavePath, context: Context): File? {
         // External sdcard location
@@ -97,9 +97,13 @@ object ImagePickerUtils {
     }
 
     fun isVideoFormat(image: Image): Boolean {
-        val extension = getExtension(image.path)
+        return isVideoFormat(image.path)
+    }
+
+    fun isVideoFormat(path: String): Boolean {
+        val extension = getExtension(path)
         val mimeType =
-            if (TextUtils.isEmpty(extension)) URLConnection.guessContentTypeFromName(image.path) else MimeTypeMap.getSingleton()
+            if (TextUtils.isEmpty(extension)) URLConnection.guessContentTypeFromName(path) else MimeTypeMap.getSingleton()
                 .getMimeTypeFromExtension(extension)
         return mimeType != null && mimeType.startsWith("video")
     }
